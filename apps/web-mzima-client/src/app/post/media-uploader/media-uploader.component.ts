@@ -1,5 +1,5 @@
 import { HttpErrorResponse, HttpEventType /*, HttpProgressEvent */ } from '@angular/common/http';
-import { Component, forwardRef, Input, OnInit } from '@angular/core';
+import { Component, forwardRef, Input, OnDestroy, OnInit } from '@angular/core';
 import {
   ControlValueAccessor,
   FormControl,
@@ -32,12 +32,12 @@ import { MediaUploaderError, MediaType, mediaTypes } from '../../core/interfaces
     },
   ],
 })
-export class MediaUploaderComponent implements ControlValueAccessor, OnInit {
+export class MediaUploaderComponent implements ControlValueAccessor, OnInit, OnDestroy {
   @Input() public maxUploadSize: number = 2;
   @Input() public maxFiles: number = -1;
   @Input() public hasCaption?: boolean;
   @Input() public requiredError?: boolean;
-  @Input() public media: 'image' | 'audio' | 'document';
+  @Input() public media: 'image' | 'audio' | 'document' | 'video';
   // @Input() public progressCallback?: (progress: number) => {};
 
   id?: number;
@@ -50,6 +50,11 @@ export class MediaUploaderComponent implements ControlValueAccessor, OnInit {
   mediaFiles: MediaFile[] = [];
   // uploadProgress$: BehaviorSubject<number>[] = [];
   uploads: Map<number, Observable<any>> = new Map();
+
+  // Audio recording state
+  isRecording = false;
+  private mediaRecorder: MediaRecorder | null = null;
+  private recordedChunks: BlobPart[] = [];
 
   constructor(
     protected sanitizer: DomSanitizer,
@@ -275,6 +280,109 @@ export class MediaUploaderComponent implements ControlValueAccessor, OnInit {
         mediaFile = updateCallback(mediaFile);
         i = this.mediaFiles.length;
       }
+    }
+  }
+
+  async startRecording() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      this.recordedChunks = [];
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+        ? 'audio/webm;codecs=opus'
+        : MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')
+          ? 'audio/ogg;codecs=opus'
+          : 'audio/webm';
+      this.mediaRecorder = new MediaRecorder(stream, { mimeType });
+      this.mediaRecorder.ondataavailable = (event) => {
+        if (event.data && event.data.size > 0) {
+          this.recordedChunks.push(event.data);
+        }
+      };
+      this.mediaRecorder.onstop = () => {
+        stream.getTracks().forEach((track) => track.stop());
+        const blob = new Blob(this.recordedChunks, { type: mimeType });
+        const ext = mimeType.startsWith('audio/ogg') ? 'ogg' : 'webm';
+        const fileName = `recorded-audio-${Date.now()}.${ext}`;
+        const file = new File([blob], fileName, { type: mimeType });
+        this.uploadRecordedFile(file);
+      };
+      this.mediaRecorder.start();
+      this.isRecording = true;
+    } catch (err) {
+      console.error('Error starting audio recording:', err);
+    }
+  }
+
+  stopRecording() {
+    if (this.mediaRecorder && this.isRecording) {
+      this.mediaRecorder.stop();
+      this.isRecording = false;
+    }
+  }
+
+  private uploadRecordedFile(file: File) {
+    const mediaFile = new MediaFile(file, URL.createObjectURL(file));
+    mediaFile.status = MediaFileStatus.UPLOADING;
+    this.mediaFiles.push(mediaFile);
+
+    const uploadObservable: Observable<any> = this.mediaService
+      .uploadFileProgress(file, '')
+      .pipe(
+        tap((uploadEvent) => {
+          if (uploadEvent.type === HttpEventType.Response) {
+            this.updateMediaFileById(
+              mediaFile.generatedId,
+              uploadEvent.body,
+              (mf, resultBody) => {
+                mf.status = MediaFileStatus.UPLOADED;
+                mf.value = resultBody.result.id;
+                return mf;
+              },
+            );
+            setTimeout(
+              (mf: MediaFile) => {
+                this.updateMediaFileById(
+                  mf.generatedId,
+                  uploadEvent.body,
+                  (theMediaFile) => {
+                    theMediaFile.status = MediaFileStatus.READY;
+                    return theMediaFile;
+                  },
+                );
+              },
+              3000,
+              mediaFile,
+            );
+          }
+        }),
+        last(),
+        catchError((error: HttpErrorResponse) => {
+          this.updateMediaFileById(mediaFile.generatedId, null, (mf) => {
+            mf.status = MediaFileStatus.ERROR;
+            return mf;
+          });
+          return throwError(() => new Error(error.statusText));
+        }),
+      );
+
+    this.uploads.set(mediaFile.generatedId, uploadObservable);
+    uploadObservable.subscribe((result) => {
+      if (result?.body?.result) {
+        const filename = MediaFile.getFileNameFromUrl(result.body.result.original_file_url);
+        this.updateMediaFileByNameAndSize(filename, result.body.result.original_file_size, (mf) => {
+          mf.value = result.body.result.id;
+          return mf;
+        });
+      }
+      this.onChange(this.mediaFiles);
+    });
+
+    this.onChange(this.mediaFiles);
+  }
+
+  ngOnDestroy() {
+    if (this.isRecording) {
+      this.stopRecording();
     }
   }
 }

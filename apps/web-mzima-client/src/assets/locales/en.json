@@ -59,10 +59,10 @@
     "choose": "Choose...",
     "add_all_fields": "Add all fields",
     "insert_text_here": "Insert text here...",
-    "deployment_not_found" : {
-      "text" : "Sorry, that deployment does not exist. Would you like to create a new deployment?",
-      "button_exit" : "Exit",
-      "button_create_deployment" : "Create Deployment"
+    "deployment_not_found": {
+      "text": "Sorry, that deployment does not exist. Would you like to create a new deployment?",
+      "button_exit": "Exit",
+      "button_create_deployment": "Create Deployment"
     },
     "documentation": {
       "title": "Documentation",
@@ -233,7 +233,7 @@
       "singular": "{{time}} year ago",
       "plural": "{{time}} years ago"
     }
-},
+  },
   "cookies": {
     "we_use_cookies": "Howdy! We use cookies to make your experience better.",
     "cookies_privacy": "If you want to know more or withdraw your consent, please go to our <a href=\"https://www.ushahidi.com/privacy-policy\" target=\"_blank\">Privacy Policy</a>.",
@@ -444,10 +444,10 @@
     "audio_desc": "Upload one or more audio file(s)",
     "document_desc": "Upload one or more document file(s)",
     "video_desc": "Allows Youtube or Vimeo videos to be embed in the post",
-    "maximum_upload_size" : "Maximum Upload Size",
-    "small_upload_size" : "Small",
-    "medium_upload_size" : "Medium",
-    "large_upload_size" : "Large",
+    "maximum_upload_size": "Maximum Upload Size",
+    "small_upload_size": "Small",
+    "medium_upload_size": "Medium",
+    "large_upload_size": "Large",
     "markdown_desc": "Allows the use of markdown syntax to style the field content.",
     "tasks": "Tasks",
     "task_visible_when_published": "This task will be visible when post is published.",
@@ -579,7 +579,9 @@
       "pending_messages": "We are processing {{totalPending}} messages.",
       "pending_message": "We are processing {{totalPending}} message.",
       "cancel": "Cancel"
-    }
+    },
+    "upload_video": "Video Upload",
+    "video_upload_desc": "Upload a video file"
   },
   "global_filter": {
     "sources": {
@@ -843,7 +845,7 @@
     "map": "Map",
     "data": "Data",
     "feed": "Data view",
-    "add_new_post":"Add New Post",
+    "add_new_post": "Add New Post",
     "edit_post": "Edit Post"
   },
   "views": {
@@ -976,7 +978,6 @@
       "lock_broken_by_other": "Your Post has been unlocked. Your current unsaved changes will be lost.",
       "locked_message": "The post is locked because <strong>{{ user }}</strong> is working on it right now. Try editing a different post.",
       "locked_tooltip": "This post is being edited by someone else. Please try again later."
-
     },
     "post_not_authorized": "You are not authorized to perform this action on this post.",
     "modify": {
@@ -1016,11 +1017,12 @@
       "format": {
         "image": "jpeg or png only",
         "audio": "mp3, aac or ogg only",
-        "document": "PDF or Word only"
+        "document": "PDF or Word only",
+        "video": "mp4, webm or ogg"
       },
       "invalid_video_embed": "Invalid video embed url",
       "errors": {
-        "required" : "{{label}} field is a required field *",
+        "required": "{{label}} field is a required field *",
         "too_short": "{{label}} field is too short, use at least 2 characters",
         "invvalid_pattern": "{{label}} field is invalid",
         "special_char": "{{label}} field contains special characters"
@@ -1103,22 +1105,25 @@
       "add_photo": "Add photo",
       "add_audio": "Add audio",
       "add_document": "Add document",
-      "retry" : "Retry",
+      "retry": "Retry",
       "delete_photo": "Delete photo",
       "replace_image": "Replace image",
       "error_in_upload": "Your image is too large (maximum size is 1MB) or has the wrong format (allowed formats are gif, png, jpg and jpeg), please check and try again!",
       "messages": {
-        "max_size" : "Your file is too large.",
-        "max_files" : "You have exceeded the maximum number of files.",
-        "required" : "Media is required.",
-        "invalid_type" : "Unsupported file type."
+        "max_size": "Your file is too large.",
+        "max_files": "You have exceeded the maximum number of files.",
+        "required": "Media is required.",
+        "invalid_type": "Unsupported file type."
       },
-      "status" : {
-        "uploading" : "Uploading...",
-        "upload_complete" : "Upload Complete!",
-        "upload_failed" : "Upload failed!"
+      "status": {
+        "uploading": "Uploading...",
+        "upload_complete": "Upload Complete!",
+        "upload_failed": "Upload failed!"
       },
-      "special_char": "This field contains special characters"
+      "special_char": "This field contains special characters",
+      "add_video": "Add video",
+      "record_audio": "Record audio",
+      "stop_recording": "Stop recording"
     },
     "video": {
       "enter_a_url": "Enter a video URL from Youtube or Vimeo."
@@ -1369,7 +1374,6 @@
       "satellite": "Satellite",
       "streets": "Streets",
       "humanitarian": "Humanitarian"
-      
     },
     "user_settings": {
       "user_settings_desc_1": "Here you can add your unique API key for your Humanitarian Data Exchange (HDX) account.",
@@ -1734,7 +1738,7 @@
     "uploading_data": "Uploading data...",
     "uploading_data_desc": "The data upload to your Humanitarian Data Exchange (HDX) account is in progress... <br /> <br />You can navigate away from this page while this upload happens but please don't close the browser.",
     "uploading_data_err": "Uh oh... Something went wrong when uploading your data, please check the required fields and your api-key and try again.",
-    "data_export_err":"Failed to export",
+    "data_export_err": "Failed to export",
     "no_fields_selected": "You haven't selected any fields or assigned any hxl tags or attributes. Please select at least one field and assign at least one tag to be able to export to CSV or upload to a Humanitarian Data Exchange (HDX) account.",
     "validation": {
       "title": "A title is needed",
@@ -2202,8 +2206,8 @@
     "select_translate_edit": "Select a language to translate to, or edit:",
     "default_lang_info": "This is the language that will be used if no translations are available for the language the user has set for the deployment.",
     "translated_to": "Translated to {{language}}",
-    "viewing_translated":"You are viewing a translated version of this post.",
-    "view_original":"View original post",
+    "viewing_translated": "You are viewing a translated version of this post.",
+    "view_original": "View original post",
     "change_lang": "Change language"
   },
   "languages": {

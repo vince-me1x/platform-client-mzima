@@ -1,0 +1,41 @@
+.audio-recorder {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  &__recording {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--ion-color-danger);
+    animation: blink 1s infinite;
+  }
+
+  &__duration {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  &__error {
+    margin-top: 4px;
+    font-size: 0.875rem;
+  }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}

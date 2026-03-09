@@ -114,6 +114,15 @@ export const surveyFields = [
     },
   },
   {
+    label: 'survey.upload_video',
+    type: 'media',
+    input: 'video',
+    instructions: 'survey.video_upload_desc',
+    config: {
+      maxUploadSize: 10,
+    },
+  },
+  {
     label: 'survey.embed_video',
     type: 'varchar',
     input: 'video',

@@ -426,8 +426,41 @@
             </div>
           </ng-container>
 
-          <!-- video -->
-          <ng-container *ngIf="field.input === 'video'">
+          <!-- audio -->
+          <ng-container *ngIf="field.input === 'audio'">
+            <div class="form-control--section">
+              <div>
+                <ion-label class="field-label">
+                  {{ field?.label }}
+                  <span class="color-accent" *ngIf="field?.required">*</span>
+                </ion-label>
+                <span
+                  class="form-row__instruction"
+                  *ngIf="field?.instructions"
+                  [innerHTML]="field?.instructions"
+                ></span>
+              </div>
+              <div class="audio-field-controls">
+                <ion-button fill="outline" color="primary" (click)="selectAudioFile(field)" [data-qa]="'btn-select-audio'">
+                  <ion-icon name="musical-note-outline" slot="start"></ion-icon>
+                  {{ 'app.select_audio_file' | translate }}
+                </ion-button>
+                <div *ngIf="audioFieldValues[field.key]" class="audio-preview">
+                  <ion-text>{{ audioFieldValues[field.key].name }}</ion-text>
+                  <ion-button fill="clear" color="danger" size="small" (click)="clearAudioField(field.key)">
+                    <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+                  </ion-button>
+                </div>
+                <app-audio-recorder
+                  (audioRecorded)="onAudioRecorded(field, $event)"
+                ></app-audio-recorder>
+              </div>
+              <ion-progress-bar [value]="uploadProgress$[field.id] | async"></ion-progress-bar>
+            </div>
+          </ng-container>
+
+          <!-- video (embed URL) -->
+          <ng-container *ngIf="field.input === 'video' && field.type !== 'media'">
             <div class="form-control--section">
               <ion-label class="field-label"
                 >{{field?.label}}
@@ -454,6 +487,36 @@
               <ng-container *ngIf="!isConnection">
                 <app-offline-notification></app-offline-notification>
               </ng-container>
+            </div>
+          </ng-container>
+
+          <!-- video file upload -->
+          <ng-container *ngIf="field.input === 'video' && field.type === 'media'">
+            <div class="form-control--section">
+              <div>
+                <ion-label class="field-label">
+                  {{ field?.label }}
+                  <span class="color-accent" *ngIf="field?.required">*</span>
+                </ion-label>
+                <span
+                  class="form-row__instruction"
+                  *ngIf="field?.instructions"
+                  [innerHTML]="field?.instructions"
+                ></span>
+              </div>
+              <div class="video-field-controls">
+                <ion-button fill="outline" color="primary" (click)="selectVideoFile(field)" [data-qa]="'btn-select-video'">
+                  <ion-icon name="videocam-outline" slot="start"></ion-icon>
+                  {{ 'app.select_video_file' | translate }}
+                </ion-button>
+                <div *ngIf="videoFieldValues[field.key]" class="video-preview">
+                  <ion-text>{{ videoFieldValues[field.key].name }}</ion-text>
+                  <ion-button fill="clear" color="danger" size="small" (click)="clearVideoField(field.key)">
+                    <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+                  </ion-button>
+                </div>
+              </div>
+              <ion-progress-bar [value]="uploadProgress$[field.id] | async"></ion-progress-bar>
             </div>
           </ng-container>
 

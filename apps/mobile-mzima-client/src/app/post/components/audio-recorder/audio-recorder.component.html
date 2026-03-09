@@ -1,0 +1,23 @@
+<div class="audio-recorder">
+  <div class="audio-recorder__controls" *ngIf="!isRecording">
+    <ion-button fill="outline" color="primary" (click)="requestPermissionAndStart()" [data-qa]="'btn-record-audio'">
+      <ion-icon name="mic-outline" slot="start"></ion-icon>
+      {{ 'app.record_audio' | translate }}
+    </ion-button>
+  </div>
+
+  <div class="audio-recorder__recording" *ngIf="isRecording">
+    <div class="audio-recorder__indicator">
+      <span class="audio-recorder__dot"></span>
+      <span class="audio-recorder__duration">{{ formattedDuration }}</span>
+    </div>
+    <ion-button fill="solid" color="danger" (click)="stopRecording()" [data-qa]="'btn-stop-record'">
+      <ion-icon name="stop-outline" slot="start"></ion-icon>
+      {{ 'app.stop_recording' | translate }}
+    </ion-button>
+  </div>
+
+  <div class="audio-recorder__error" *ngIf="permissionDenied">
+    <ion-text color="danger">{{ 'app.microphone_permission_denied' | translate }}</ion-text>
+  </div>
+</div>

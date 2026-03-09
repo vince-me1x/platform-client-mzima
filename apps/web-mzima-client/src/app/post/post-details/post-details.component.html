@@ -162,7 +162,7 @@
                 </ul>
               </ng-container>
 
-              <ng-container *ngIf="field.input === 'video'">
+              <ng-container *ngIf="field.input === 'video' && field.type !== 'media'">
                 <span *ngIf="!field.value.value">-</span>
                 <div *ngIf="field.value.value">
                   <iframe
@@ -176,6 +176,16 @@
                   </div>
                 </div>
               </ng-container>
+
+              <div class="post__video" *ngIf="field.input === 'video' && field.type === 'media' && field.value.length > 0">
+                <div class="post__video__item" *ngFor="let mediaFile of field.value">
+                  <span class="post__video__item__filename">{{ mediaFile.filename }}</span>
+                  <video
+                    controls
+                    [src]="this.sanitizer.bypassSecurityTrustUrl(mediaFile.url)"
+                  ></video>
+                </div>
+              </div>
 
               <ng-container *ngIf="field.input === 'upload' && field.value.mediaSrc">
                 <span *ngIf="!field.value.value">-</span>

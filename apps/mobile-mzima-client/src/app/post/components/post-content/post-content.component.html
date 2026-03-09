@@ -81,7 +81,7 @@
           </ng-template>
         </ng-container>
 
-        <ng-container *ngIf="field.input === 'video'">
+        <ng-container *ngIf="field.input === 'video' && field.type !== 'media'">
           <ng-container *ngIf="videoUrls.length && isConnection">
             <div *ngIf="field.value.value">
               <iframe
@@ -99,6 +99,24 @@
           <div>
             <a [href]="field.value.value" target="_blank">{{ field.value.value }}</a>
           </div>
+        </ng-container>
+
+        <ng-container *ngIf="field.input === 'audio' && field.value?.url">
+          <ng-container *ngIf="isConnection">
+            <audio controls [src]="field.value.url | prependUrl : backendUrl"></audio>
+          </ng-container>
+          <ng-container *ngIf="!isConnection">
+            <app-offline-notification></app-offline-notification>
+          </ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="field.input === 'video' && field.type === 'media' && field.value?.url">
+          <ng-container *ngIf="isConnection">
+            <video controls width="100%" [src]="field.value.url | prependUrl : backendUrl"></video>
+          </ng-container>
+          <ng-container *ngIf="!isConnection">
+            <app-offline-notification></app-offline-notification>
+          </ng-container>
         </ng-container>
 
         <ng-container *ngIf="field.input === 'location'">
