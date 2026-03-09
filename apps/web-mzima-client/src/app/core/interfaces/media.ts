@@ -26,7 +26,8 @@ const mediaTypes = new Map<string, MediaType>([
     {
       icon: 'speaker',
       buttonText: 'post.media.add_audio',
-      fileTypes: 'audio/mp3, audio/mpeg, audio/ogg, audio/aac',
+      fileTypes:
+        'audio/mp3, audio/mpeg, audio/ogg, audio/aac, audio/mp4, audio/webm, audio/webm;codecs=opus, audio/ogg;codecs=opus',
     },
   ],
   [
@@ -36,6 +37,14 @@ const mediaTypes = new Map<string, MediaType>([
       buttonText: 'post.media.add_document',
       fileTypes:
         'application/pdf, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    },
+  ],
+  [
+    'video',
+    {
+      icon: 'videocam',
+      buttonText: 'post.media.add_video',
+      fileTypes: 'video/mp4, video/webm, video/ogg, video/quicktime',
     },
   ],
 ]);

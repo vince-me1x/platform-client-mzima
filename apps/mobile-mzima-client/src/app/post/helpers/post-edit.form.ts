@@ -14,7 +14,7 @@ export class PostEditForm {
   }
 
   public addFormControl(value: any, field: any): FormControl {
-    if (field.input === 'video') {
+    if (field.input === 'video' && field.type !== 'media') {
       const videoValidators = [];
       if (field.required) {
         videoValidators.push(Validators.required);

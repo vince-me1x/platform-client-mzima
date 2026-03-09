@@ -504,7 +504,9 @@ export class PostEditComponent extends BaseComponent implements OnInit, OnChange
     for (const { fields } of updateValues) {
       for (const { type, input, key, value, options } of fields) {
         this.form.patchValue({ [key]: value });
-        if (inputHandlers[input as InputHandlerType]) {
+        if (input === 'video' && type === 'media') {
+          this.handleMedia(key, value);
+        } else if (inputHandlers[input as InputHandlerType]) {
           inputHandlers[input as InputHandlerType]!(key, value);
         } else if (inputHandlersOptions[input as InputHandlersOptionsType]) {
           inputHandlersOptions[input as InputHandlersOptionsType](key, value, options);
@@ -527,7 +529,7 @@ export class PostEditComponent extends BaseComponent implements OnInit, OnChange
   }
 
   private addFormControl(value: any, field: any): FormControl {
-    if (field.input === 'video') {
+    if (field.input === 'video' && field.type !== 'media') {
       const videoValidators = [];
       if (field.required) {
         videoValidators.push(Validators.required);
@@ -627,11 +629,16 @@ export class PostEditComponent extends BaseComponent implements OnInit, OnChange
                 }
                 break;
               case 'video':
-                value = this.form.value[field.key]
-                  ? {
-                      value: preparingVideoUrl(this.form.value[field.key]),
-                    }
-                  : {};
+                if (field.type === 'media') {
+                  value.value =
+                    this.form.value[field.key]?.map((fieldValue: any) => fieldValue.value) || [];
+                } else {
+                  value = this.form.value[field.key]
+                    ? {
+                        value: preparingVideoUrl(this.form.value[field.key]),
+                      }
+                    : {};
+                }
                 break;
 
               case 'relation':

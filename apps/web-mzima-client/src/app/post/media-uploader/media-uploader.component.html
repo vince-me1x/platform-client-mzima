@@ -28,6 +28,12 @@
               controls
               [src]="this.sanitizer.bypassSecurityTrustUrl(mediaFile.url!)"
             ></audio>
+            <video
+              *ngIf="media === 'video'"
+              controls
+              class="thumbnail"
+              [src]="this.sanitizer.bypassSecurityTrustUrl(mediaFile.url!)"
+            ></video>
             <div class="media-details">
               <div class="filename">{{ mediaFile.filename }}</div>
               <div class="filesize">{{ mediaFile.fileSize }}</div>
@@ -94,6 +100,30 @@
         accept="{{ mediaType.fileTypes }}"
         (change)="onFileSelected($event)"
       />
+      <ng-container *ngIf="media === 'audio'">
+        <mzima-client-button
+          *ngIf="!isRecording"
+          fill="outline"
+          color="secondary"
+          class="media-loader__control"
+          (buttonClick)="startRecording()"
+          [data-qa]="'btn-post-item-record-audio'"
+        >
+          <mat-icon iconPrefix>mic</mat-icon>
+          {{ 'post.media.record_audio' | translate }}
+        </mzima-client-button>
+        <mzima-client-button
+          *ngIf="isRecording"
+          fill="solid"
+          color="warn"
+          class="media-loader__control"
+          (buttonClick)="stopRecording()"
+          [data-qa]="'btn-post-item-stop-record'"
+        >
+          <mat-icon iconPrefix>stop</mat-icon>
+          {{ 'post.media.stop_recording' | translate }}
+        </mzima-client-button>
+      </ng-container>
     </div>
 
     <mat-error class="error-msg" *ngIf="error !== 'none'">

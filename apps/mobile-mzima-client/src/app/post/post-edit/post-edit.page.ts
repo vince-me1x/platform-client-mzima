@@ -100,6 +100,11 @@ export class PostEditPage {
   private queryParams: Params;
   public requireApproval = false;
 
+  // Audio/video field state
+  public audioFieldValues: Record<string, { data: string; name: string; path: string; mimeType: string } | null> = {};
+  public videoFieldValues: Record<string, { data: string; name: string; path: string } | null> = {};
+  private audioFilesToUpload: Record<string, { data: string; name: string; path: string; mimeType: string }> = {};
+
   dateOption: any;
 
   constructor(
@@ -602,7 +607,25 @@ export class PostEditPage {
             if (field.type === 'title') this.title = fieldValue;
             if (field.type === 'description') this.description = fieldValue;
 
-            if (fieldHandlers.hasOwnProperty(field.input)) {
+            if (field.input === 'audio' && this.audioFilesToUpload[field.key]) {
+              // Audio recording or selected audio file pending upload
+              const audioData = this.audioFilesToUpload[field.key];
+              value = {
+                value: {
+                  photo: { data: audioData.data, name: audioData.name, path: audioData.path },
+                  caption: '',
+                },
+              };
+            } else if (field.input === 'video' && field.type === 'media' && this.audioFilesToUpload[field.key]) {
+              // Video file pending upload
+              const videoData = this.audioFilesToUpload[field.key];
+              value = {
+                value: {
+                  photo: { data: videoData.data, name: videoData.name, path: videoData.path },
+                  caption: '',
+                },
+              };
+            } else if (fieldHandlers.hasOwnProperty(field.input) && !(field.input === 'video' && field.type === 'media')) {
               value = fieldHandlers[field.input as keyof typeof fieldHandlers](fieldValue);
             } else if (field.input === 'upload') {
               if (this.form.value[field.key]?.upload && this.form.value[field.key]?.photo) {
@@ -1028,5 +1051,73 @@ export class PostEditPage {
 
   public isLocationRequired(field: any): boolean {
     return field?.required || false;
+  }
+
+  public onAudioRecorded(field: any, recorded: { data: string; name: string; path: string; mimeType: string }) {
+    this.audioFieldValues[field.key] = recorded;
+    this.audioFilesToUpload[field.key] = recorded;
+    this.form.patchValue({ [field.key]: { value: null, pending: true } });
+  }
+
+  public clearAudioField(fieldKey: string) {
+    delete this.audioFieldValues[fieldKey];
+    delete this.audioFilesToUpload[fieldKey];
+    this.form.patchValue({ [fieldKey]: null });
+  }
+
+  public async selectAudioFile(field: any) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'audio/*';
+    input.onchange = async (event: any) => {
+      const file: File = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const dataUrl = reader.result as string;
+        const recorded = {
+          data: dataUrl,
+          name: file.name,
+          path: file.name,
+          mimeType: file.type || 'audio/mpeg',
+        };
+        this.audioFieldValues[field.key] = recorded;
+        this.audioFilesToUpload[field.key] = recorded;
+        this.form.patchValue({ [field.key]: { value: null, pending: true } });
+      };
+      reader.readAsDataURL(file);
+    };
+    input.click();
+  }
+
+  public async selectVideoFile(field: any) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'video/*';
+    input.onchange = async (event: any) => {
+      const file: File = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const dataUrl = reader.result as string;
+        const fileInfo = {
+          data: dataUrl,
+          name: file.name,
+          path: file.name,
+          mimeType: file.type || 'video/mp4',
+        };
+        this.videoFieldValues[field.key] = fileInfo;
+        this.audioFilesToUpload[field.key] = fileInfo;
+        this.form.patchValue({ [field.key]: { value: null, pending: true } });
+      };
+      reader.readAsDataURL(file);
+    };
+    input.click();
+  }
+
+  public clearVideoField(fieldKey: string) {
+    delete this.videoFieldValues[fieldKey];
+    delete this.audioFilesToUpload[fieldKey];
+    this.form.patchValue({ [fieldKey]: null });
   }
 }
