@@ -102,8 +102,8 @@ export class PostEditPage {
 
   // Audio/video field state
   public audioFieldValues: Record<string, { data: string; name: string; path: string; mimeType: string } | null> = {};
-  public videoFieldValues: Record<string, { data: string; name: string; path: string } | null> = {};
-  private audioFilesToUpload: Record<string, { data: string; name: string; path: string; mimeType: string }> = {};
+  public videoFieldValues: Record<string, { data: string; name: string; path: string; mimeType: string } | null> = {};
+  private mediaFilesToUpload: Record<string, { data: string; name: string; path: string; mimeType: string }> = {};
 
   dateOption: any;
 
@@ -607,18 +607,18 @@ export class PostEditPage {
             if (field.type === 'title') this.title = fieldValue;
             if (field.type === 'description') this.description = fieldValue;
 
-            if (field.input === 'audio' && this.audioFilesToUpload[field.key]) {
+            if (field.input === 'audio' && this.mediaFilesToUpload[field.key]) {
               // Audio recording or selected audio file pending upload
-              const audioData = this.audioFilesToUpload[field.key];
+              const audioData = this.mediaFilesToUpload[field.key];
               value = {
                 value: {
                   photo: { data: audioData.data, name: audioData.name, path: audioData.path },
                   caption: '',
                 },
               };
-            } else if (field.input === 'video' && field.type === 'media' && this.audioFilesToUpload[field.key]) {
+            } else if (field.input === 'video' && field.type === 'media' && this.mediaFilesToUpload[field.key]) {
               // Video file pending upload
-              const videoData = this.audioFilesToUpload[field.key];
+              const videoData = this.mediaFilesToUpload[field.key];
               value = {
                 value: {
                   photo: { data: videoData.data, name: videoData.name, path: videoData.path },
@@ -1055,13 +1055,13 @@ export class PostEditPage {
 
   public onAudioRecorded(field: any, recorded: { data: string; name: string; path: string; mimeType: string }) {
     this.audioFieldValues[field.key] = recorded;
-    this.audioFilesToUpload[field.key] = recorded;
+    this.mediaFilesToUpload[field.key] = recorded;
     this.form.patchValue({ [field.key]: { value: null, pending: true } });
   }
 
   public clearAudioField(fieldKey: string) {
     delete this.audioFieldValues[fieldKey];
-    delete this.audioFilesToUpload[fieldKey];
+    delete this.mediaFilesToUpload[fieldKey];
     this.form.patchValue({ [fieldKey]: null });
   }
 
@@ -1082,7 +1082,7 @@ export class PostEditPage {
           mimeType: file.type || 'audio/mpeg',
         };
         this.audioFieldValues[field.key] = recorded;
-        this.audioFilesToUpload[field.key] = recorded;
+        this.mediaFilesToUpload[field.key] = recorded;
         this.form.patchValue({ [field.key]: { value: null, pending: true } });
       };
       reader.readAsDataURL(file);
@@ -1107,7 +1107,7 @@ export class PostEditPage {
           mimeType: file.type || 'video/mp4',
         };
         this.videoFieldValues[field.key] = fileInfo;
-        this.audioFilesToUpload[field.key] = fileInfo;
+        this.mediaFilesToUpload[field.key] = fileInfo;
         this.form.patchValue({ [field.key]: { value: null, pending: true } });
       };
       reader.readAsDataURL(file);
@@ -1117,7 +1117,7 @@ export class PostEditPage {
 
   public clearVideoField(fieldKey: string) {
     delete this.videoFieldValues[fieldKey];
-    delete this.audioFilesToUpload[fieldKey];
+    delete this.mediaFilesToUpload[fieldKey];
     this.form.patchValue({ [fieldKey]: null });
   }
 }

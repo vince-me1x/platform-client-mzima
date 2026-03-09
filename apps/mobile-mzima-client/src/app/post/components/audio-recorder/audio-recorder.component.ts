@@ -26,7 +26,7 @@ export class AudioRecorderComponent implements OnDestroy {
 
   private mediaRecorder: MediaRecorder | null = null;
   private recordedChunks: BlobPart[] = [];
-  private durationInterval: ReturnType<typeof setInterval> | null = null;
+  private durationInterval: number | null = null;
 
   async requestPermissionAndStart() {
     try {
@@ -65,7 +65,7 @@ export class AudioRecorderComponent implements OnDestroy {
     this.mediaRecorder.start();
     this.isRecording = true;
 
-    this.durationInterval = setInterval(() => {
+    this.durationInterval = window.setInterval(() => {
       this.recordingDuration++;
     }, 1000);
   }
